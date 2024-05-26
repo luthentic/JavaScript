@@ -10,8 +10,9 @@
 - [Function Scope vs Block Scope](#function-scope-vs-block-scope)
 - [Primitive data types](primitive-data-types)
 - [Prototype](#prototype)
-- [DOM](#dom)
-- [CSSOM](#cssom)
+- [Generator](#generator)
+- [IIFE](#IIFE)
+- [Argument Object](#argument-object)
 
 --- 
 
@@ -290,4 +291,146 @@ console.log(merged.get(1)); // eins
 console.log(merged.get(2)); // dos
 console.log(merged.get(3)); // three
 ```
+---
+
+
+
+
+
+
+
+
+
+
+## Generator:
+
+### What Are Generators?
+- Generators are special functions that can be paused and resumed.
+- They allow you to yield multiple values one after another, on-demand.
+- Created using the function* syntax (generator function).
+### How Generators Work:
+- When called, a generator function doesn’t execute its code immediately.
+- Instead, it returns a “generator object” that manages execution.
+- The main method of a generator is next(), which runs until the nearest yield statement.
+- The result of next() includes value (yielded value) and done (true if finished).
+
+```js
+function* generateSequence() {
+    yield 1;
+    yield 2;
+    return 3;
+}
+let generator = generateSequence();
+let one = generator.next(); // { value: 1, done: false }
+let two = generator.next(); // { value: 2, done: false }
+let three = generator.next(); // { value: 3, done: true }
+```
+
+### Iterating with Generators:
+- Generators are iterable, making them great for loops.
+- Use for..of to loop over their values.
+- Note that the last value (when done: true) is ignored.
+
+```js
+function* generateSequence() {
+    yield 1;
+    yield 2;
+    return 3;
+}
+
+let generator = generateSequence();
+
+for (let value of generator) {
+    console.log(value); // Outputs: 1, then 2
+}
+```
+
+## IIFE:
+
+```js
+const makeWithdraw = (balance) =>
+  ((copyBalance) => {
+    let balance = copyBalance; // This variable is private
+    const doBadThings = () => {
+      console.log("I will do bad things with your money");
+    };
+    doBadThings();
+    return {
+      withdraw(amount) {
+        if (balance >= amount) {
+          balance -= amount;
+          return balance;
+        }
+        return "Insufficient money";
+      },
+    };
+  })(balance);
+
+const firstAccount = makeWithdraw(100); // "I will do bad things with your money"
+console.log(firstAccount.balance); // undefined
+console.log(firstAccount.withdraw(20)); // 80
+console.log(firstAccount.withdraw(30)); // 50
+console.log(firstAccount.doBadThings); // undefined; this method is private
+const secondAccount = makeWithdraw(20); // "I will do bad things with your money"
+console.log(secondAccount.withdraw(30)); // "Insufficient money"
+console.log(secondAccount.withdraw(20)); // 0
+```
+
+### IIFE and Private Scope:
+- The outer function (copyBalance) => { ... } is an IIFE.
+- It immediately executes and returns an object with a withdraw method.
+- Inside this IIFE, the balance variable is scoped to the function, making it private (not accessible from outside).
+### Accessing the withdraw Method:
+- Despite the private scope, the withdraw method is accessible from outside the IIFE.
+- Why? Because the returned object (with the withdraw method) is assigned to firstAccount.
+- The withdraw method is part of that object, so it’s accessible via firstAccount.withdraw.
+### Private Variables vs. Public Methods:
+- The withdraw method is not private; it’s part of the public interface.
+- However, the balance variable is private because it’s scoped within the IIFE.
+- The doBadThings function is also private and inaccessible from outside.
+
+---
+
+
+
+## Argument Object:
+Non-strict functions that only have simple parameters (that is, no rest, default, or destructured parameters) will sync the new value of parameters with the arguments object, and vice versa
+
+```js
+function func(a) {
+  arguments[0] = 99; // updating arguments[0] also updates a
+  console.log(a);
+}
+func(10); // 99
+
+function func2(a) {
+  a = 99; // updating a also updates arguments[0]
+  console.log(arguments[0]);
+}
+func2(10); // 99
+```
+
+Non-strict functions that are passed rest, default, or destructured parameters will not sync new values assigned to parameters in the function body with the arguments object. Instead, the arguments object in non-strict functions with complex parameters will always reflect the values passed to the function when the function was called.
+
+```js
+function funcWithDefault(a = 55) {
+  arguments[0] = 99; // updating arguments[0] does not also update a
+  console.log(a);
+}
+funcWithDefault(10); // 10
+
+function funcWithDefault2(a = 55) {
+  a = 99; // updating a does not also update arguments[0]
+  console.log(arguments[0]);
+}
+funcWithDefault2(10); // 10
+
+// An untracked default parameter
+function funcWithDefault3(a = 55) {
+  console.log(arguments[0]);
+  console.log(arguments.length);
+}
+funcWithDefault3(); // undefined; 0
+```
+
 
