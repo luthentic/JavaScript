@@ -13,6 +13,7 @@
 - [Generator](#generator)
 - [IIFE](#IIFE)
 - [Argument Object](#argument-object)
+- [Strict Mode](#strict-mode)
 
 --- 
 
@@ -431,6 +432,53 @@ function funcWithDefault3(a = 55) {
   console.log(arguments.length);
 }
 funcWithDefault3(); // undefined; 0
+```
+
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+## Strict Mode:
+
+### Strict mode for modules:
+The entire contents of JavaScript modules are automatically in strict mode, with no statement needed to initiate it.
+
+```js
+function myStrictFunction() {
+  // because this is a module, I'm strict by default
+}
+export default myStrictFunction;
+```
+
+### Strict mode for classes:
+All parts of a class's body are strict mode code, including both class declarations and class expressions.
+
+```js
+class C1 {
+  // All code here is evaluated in strict mode
+  test() {
+    delete Object.prototype;
+  }
+}
+new C1().test(); // TypeError, because test() is in strict mode
+
+const C2 = class {
+  // All code here is evaluated in strict mode
+};
+
+// Code here may not be in strict mode
+delete Object.prototype; // Will not throw error
 ```
 
 
