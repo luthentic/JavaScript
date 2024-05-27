@@ -480,5 +480,67 @@ const C2 = class {
 // Code here may not be in strict mode
 delete Object.prototype; // Will not throw error
 ```
+---
 
 
+
+
+## Event Loop:
+
+### What is the Event Loop?
+Imagine you’re the conductor of a grand orchestra, directing a performance with various instruments and sections. Each musician plays their part, and the music flows seamlessly from one note to the next.
+
+The orchestra’s harmony relies on your skill in coordinating these diverse elements. This orchestral analogy provides a fitting illustration of the event loop in JavaScript.
+
+The event loop is the conductor of JavaScript’s asynchronous orchestra. It’s a fundamental concept that orchestrates the flow of code execution, ensuring that asynchronous operations and tasks harmoniously blend with the synchronous parts of your script.
+
+In simpler terms, the event loop keeps your JavaScript program responsive and efficient, like a well-conducted orchestra maintaining a consistent rhythm.
+
+
+## Modules:
+
+import.meta
+The object import.meta contains the information about the current module.
+
+Its content depends on the environment. In the browser, it contains the URL of the script, or a current webpage URL if inside HTML:
+
+<script type="module">
+  alert(import.meta.url); // script URL
+  // for an inline script - the URL of the current HTML-page
+</script>
+
+
+In a module, “this” is undefined
+That’s kind of a minor feature, but for completeness we should mention it.
+
+In a module, top-level this is undefined.
+
+Compare it to non-module scripts, where this is a global object:
+
+<script>
+  alert(this); // window
+</script>
+
+<script type="module">
+  alert(this); // undefined
+</script>
+
+Async works on inline scripts:
+
+For non-module scripts, the async attribute only works on external scripts. Async scripts run immediately when ready, independently of other scripts or the HTML document.
+
+For module scripts, it works on inline scripts as well.
+
+For example, the inline script below has async, so it doesn’t wait for anything.
+
+It performs the import (fetches ./analytics.js) and runs when ready, even if the HTML document is not finished yet, or if other scripts are still pending.
+
+That’s good for functionality that doesn’t depend on anything, like counters, ads, document-level event listeners.
+
+<!-- all dependencies are fetched (analytics.js), and the script runs -->
+<!-- doesn't wait for the document or other <script> tags -->
+<script async type="module">
+  import {counter} from './analytics.js';
+
+  counter.count();
+</script>
